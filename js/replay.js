@@ -71,7 +71,6 @@
       if (!inWin && next && nt < next.t - WINDOW) {
         nt = next.t - WINDOW;
         P.jumpFx = 1;
-        flashTag("BUSCA INTELIGENTE · PRÓXIMO EVENTO");
       }
     }
     if (nt >= T1) { nt = T0; P.jumpFx = 1; }
@@ -140,16 +139,6 @@
       ctx.moveTo(X + k, Y + BH); ctx.lineTo(X, Y + BH); ctx.lineTo(X, Y + BH - k);
       ctx.stroke();
       ctx.shadowBlur = 0;
-      const fs = Math.max(10, 11 * dpr);
-      ctx.font = `700 ${fs}px "JetBrains Mono", monospace`;
-      const lab = `PESSOA ${e.conf}%`;
-      const tw = ctx.measureText(lab).width + 10 * dpr;
-      let ly = Y - fs - 8 * dpr;
-      if (ly < 4) ly = Y + BH + 4 * dpr;
-      ctx.fillStyle = "#ff2a1a";
-      ctx.fillRect(X, ly, tw, fs + 7 * dpr);
-      ctx.fillStyle = "#fff";
-      ctx.fillText(lab, X + 5 * dpr, ly + fs + 1 * dpr);
       // linha de varredura
       if (!reduced) {
         const sy = Y + ((now / 900) % 1) * BH;
@@ -180,10 +169,6 @@
     ctx.fillStyle = "#fff";
     ctx.textBaseline = "middle";
     ctx.fillText(`▶ ${hms(P.t)}`, 12 * dpr, h - fs * 1.2);
-    const st = inWin ? `EVENTO ${idx + 1}/3` : "SEM MOVIMENTO";
-    const sw = ctx.measureText(st).width;
-    ctx.fillStyle = inWin ? "#ff6b5f" : "rgba(255,255,255,.6)";
-    ctx.fillText(st, w - sw - 12 * dpr, h - fs * 1.2);
     ctx.textBaseline = "alphabetic";
   }
 
@@ -243,16 +228,11 @@
         document.querySelectorAll("[data-speed]").forEach((x) => x.classList.toggle("is-active", x === b));
       })
     );
-    const smart = $("#replaySmart");
-    smart.addEventListener("click", () => {
-      P.smart = !P.smart;
-      smart.setAttribute("aria-pressed", String(P.smart));
-    });
+
     const zoomBtn = $("#replayZoom");
     const toggleZoom = () => {
       P.zoom = !P.zoom;
       zoomBtn.setAttribute("aria-pressed", String(P.zoom));
-      flashTag(P.zoom ? "ZOOM DIGITAL 2.6x" : "ZOOM 1x");
     };
     zoomBtn.addEventListener("click", toggleZoom);
     cv.addEventListener("click", toggleZoom);

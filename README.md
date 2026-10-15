@@ -5,9 +5,12 @@ Site estático (HTML + CSS + JavaScript). Não precisa de build, nem de servidor
 ## Antes de publicar
 1. **Logo:** já aplicada (`assets/logo.webp`, `assets/logo-lg.webp`, `assets/favicon.png`).
 2. **WhatsApp:** em `js/config.js`, preencha `whatsapp: "5534XXXXXXXXX"`. Todos os botões passam a abrir o WhatsApp com uma mensagem pronta para cada público (casa, empresa, rural).
-3. **Prints de clientes:** salve em `assets/prints/` e troque cada `<div class="print__ph">` em `index.html` por `<img src="assets/prints/print-01.webp" alt="Mensagem de cliente">`.
-4. **Linha do tempo:** substitua os itens pelos marcos reais e pelas fotos históricas da Semelc (há um comentário no HTML indicando onde).
+3. **Prints de clientes:** quando houver prints reais, incluir na Dobra 7 (há um comentário no `index.html` indicando o local).
+4. **Linha do tempo:** o doc pede registros históricos e marcos reais; incluir quando o cliente enviar (comentário no HTML da Dobra 5).
 5. **FAQ:** confirme as respostas com o comercial (conforme o doc).
+
+## Regra de conteúdo
+Toda a copy da página segue o doc da LP. A única seção com texto criado é o **Simulador**.
 
 ## Cores
 As cores ficam em `css/style.css`, no `:root` (`--brand`, `--brand-2`, `--brand-3`, `--brand-grad`).

@@ -43,10 +43,6 @@
       this.game = game;
       this.el = document.createElement("div");
       this.el.className = "feed";
-      this.el.setAttribute("role", "button");
-      this.el.setAttribute("tabindex", "0");
-      this.el.setAttribute("aria-label", `Câmera ${idx + 1}: ${cfg.name}`);
-      this.el.dataset.cursor = "verificar";
       this.canvas = document.createElement("canvas");
       this.el.appendChild(this.canvas);
       wall.appendChild(this.el);
@@ -65,10 +61,6 @@
         this.pan.ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
       });
       this.el.addEventListener("pointerleave", () => { this.pan.tx = 0; this.pan.ty = 0; });
-      this.el.addEventListener("click", () => game.hit(this));
-      this.el.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); game.hit(this); }
-      });
       this.resize();
     }
 
@@ -241,8 +233,6 @@
     drawBox(ctx, b, w, now) {
       const d = this.dpr;
       const k = Math.min(b.w, b.h) * 0.28;
-      const elapsed = ((w.hold ? w.holdAt : now) - w.born) / 1000;
-      const left = clamp(1 - elapsed / w.ttl, 0, 1);
       const blink = Math.sin(now / 90) > -0.3;
       const col = w.state === "ok" ? "#2fe39a" : (w.state === "lost" || w.state === "wrong") ? "#ff3b3b" : w.hold ? "#ffffff" : (blink ? "#ff3b3b" : "#ffb02e");
       ctx.save();
@@ -255,25 +245,6 @@
       ctx.moveTo(x + bw, y + bh - k); ctx.lineTo(x + bw, y + bh); ctx.lineTo(x + bw - k, y + bh);
       ctx.moveTo(x + k, y + bh); ctx.lineTo(x, y + bh); ctx.lineTo(x, y + bh - k);
       ctx.stroke();
-      // etiqueta (oculta durante a verificação: o painel já mostra a câmera)
-      if (w.hold && w.state === "walk") { ctx.restore(); return; }
-      const fs = Math.max(8, 9 * d);
-      ctx.font = `600 ${fs}px "JetBrains Mono", monospace`;
-      const label = w.state === "ok" ? (w.resLabel || "VERIFICADO") : w.state === "lost" ? "SEM RESPOSTA" : w.state === "wrong" ? "DECISÃO INCORRETA" : w.hold ? "EM VERIFICAÇÃO" : "MOVIMENTO";
-      const tw = ctx.measureText(label).width + 8 * d;
-      let lx = clamp(x, 2, this.w - tw - 2), ly = y - fs - 6 * d;
-      if (ly < 2) ly = y + bh + 4 * d;
-      ctx.fillStyle = col;
-      ctx.fillRect(lx, ly, tw, fs + 5 * d);
-      ctx.fillStyle = (w.state === "ok" || (w.hold && w.state === "walk")) ? "#03140c" : "#fff";
-      ctx.fillText(label, lx + 4 * d, ly + fs);
-      // tempo restante
-      if (w.state === "walk" && !w.hold && this.game.mode === "play") {
-        ctx.fillStyle = "rgba(0,0,0,.5)";
-        ctx.fillRect(x, y + bh + 3 * d, bw, 3 * d);
-        ctx.fillStyle = col;
-        ctx.fillRect(x, y + bh + 3 * d, bw * left, 3 * d);
-      }
       ctx.restore();
     }
 
@@ -358,351 +329,91 @@
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
 
-      // HUD
+      // HUD: só relógio e indicador de gravação
       const d = this.dpr;
-      const compact = W / d < 340;
-      const fs = Math.max(8, Math.round(W / (compact ? 22 : 34)));
+      const fs = Math.max(8, Math.round(W / 30));
       ctx.font = `600 ${fs}px "JetBrains Mono", monospace`;
       ctx.textBaseline = "top";
       ctx.fillStyle = "rgba(255,255,255,.92)";
       ctx.shadowColor = "rgba(0,0,0,.8)";
       ctx.shadowBlur = 4;
       const m = 8 * d;
-      ctx.fillText(compact ? `CAM ${pad(this.idx + 1)}` : `CAM ${pad(this.idx + 1)} · ${this.cfg.name}`, m + fs * 1.1, m);
-      const ct = compact ? clockText.slice(0, 5) : clockText;
-      const tw = ctx.measureText(ct).width;
-      ctx.fillText(ct, W - m - tw, m);
-      ctx.textBaseline = "bottom";
-      ctx.fillStyle = ir ? "#9dffb5" : "rgba(255,255,255,.7)";
-      ctx.fillText(ir ? "IR ON" : "COLOR", m, H - m);
+      const tw = ctx.measureText(clockText).width;
+      ctx.fillText(clockText, W - m - tw, m);
       ctx.shadowBlur = 0;
       if (Math.floor(now / 600) % 2 === 0) {
         ctx.fillStyle = "#ff3b3b";
         ctx.beginPath(); ctx.arc(m + fs * 0.4, m + fs * 0.55, fs * 0.32, 0, Math.PI * 2); ctx.fill();
       }
       ctx.textBaseline = "alphabetic";
-
-      this.el.classList.toggle("is-alert", !!this.activeAlert() && this.game.mode === "play");
     }
 
-    pop(text, kind) {
-      const p = document.createElement("div");
-      p.className = `feed__pop ${kind}`;
-      p.textContent = text;
-      this.el.appendChild(p);
-      if (window.gsap) {
-        gsap.fromTo(p, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "back.out(2)" });
-        gsap.to(p, { y: -24, opacity: 0, delay: 0.7, duration: 0.4, onComplete: () => p.remove() });
-      } else setTimeout(() => p.remove(), 1000);
-    }
   }
 
 
-  const KIND = {
-    intruso:    { act: "acionar",    ok: "PROCEDIMENTO ACIONADO", log: "pessoa não autorizada · procedimento acionado", name: "pessoa não autorizada" },
-    autorizado: { act: "autorizado", ok: "PESSOA AUTORIZADA",     log: "funcionário identificado · liberado",            name: "pessoa autorizada" },
-    animal:     { act: "animal",     ok: "FALSO ALARME",          log: "animal na área · falso alarme descartado",        name: "animal (falso alarme)" },
-  };
   const pickKind = () => { const r = Math.random(); return r < 0.55 ? "intruso" : r < 0.8 ? "autorizado" : "animal"; };
-  const fmt = (n) => n.toFixed(1).replace(".", ",");
 
-  const Game = {
-    mode: "idle",
+  // Mural visual: câmeras em funcionamento, detecções e ciclo dia/noite (sem textos)
+  const Wall = {
     feeds: [],
-    verifying: null,
-
     init() {
       const root = $("#console");
       if (!root) return;
-      this.root = root;
       this.wall = $("#gWall");
-      this.ui = {
-        clock: $("#gClock"), score: $("#gScore"), hits: $("#gHits"), miss: $("#gMiss"), avg: $("#gAvg"), combo: $("#gCombo"),
-        time: $("#gTime"), mode: $("#gMode"), ticker: $("#gTicker"), ir: $("#gIR"),
-        start: $("#gStart"), end: $("#gEnd"),
-      };
-      this.v = { box: $("#gVerify"), cam: $("#vCam"), canvas: $("#vCanvas"), timer: $("#vTimer") };
-      this.vctx = this.v.canvas.getContext("2d");
+      this.bar = $("#gTime");
       this.noise = makeNoise(256);
       const sc = document.createElement("canvas");
       sc.width = 1; sc.height = 3;
       const sx = sc.getContext("2d");
       sx.fillStyle = "rgba(0,0,0,.22)"; sx.fillRect(0, 0, 1, 1);
-
       FEEDS.forEach((cfg, i) => this.feeds.push(new Feed(cfg, i, this.wall, this)));
       this.scan = this.feeds[0].ctx.createPattern(sc, "repeat");
-      this.irForced = false;
-
+      this.mode = "idle";
+      this.cycle = 48000; // 24 horas em 48 segundos
+      this.t0 = performance.now();
+      this.nextSpawn = this.t0 + 1200;
+      this.last = this.t0;
       new ResizeObserver(() => this.feeds.forEach((f) => f.resize())).observe(this.wall);
       this.visible = false;
       new IntersectionObserver((e) => {
         this.visible = e[0].isIntersecting;
         if (this.visible && !this.raf) this.loop(performance.now());
       }, { rootMargin: "100px" }).observe(root);
-
-      $("#gPlay").addEventListener("click", () => this.start());
-      $("#gAgain").addEventListener("click", () => this.start());
-      $("#gWatch").addEventListener("click", () => this.watch());
-      this.ui.ir.addEventListener("click", () => {
-        this.irForced = !this.irForced;
-        this.ui.ir.setAttribute("aria-pressed", String(this.irForced));
-      });
-      this.v.box.querySelectorAll("[data-act]").forEach((b) => b.addEventListener("click", () => this.decide(b.dataset.act)));
-      $("#vClose").addEventListener("click", () => this.closeVerify());
-      window.addEventListener("keydown", (e) => {
-        if (this.mode !== "play") return;
-        const k = e.key.toLowerCase();
-        if (this.verifying) {
-          if (k === "a") this.decide("acionar");
-          else if (k === "p") this.decide("autorizado");
-          else if (k === "f") this.decide("animal");
-          else if (k === "escape") this.closeVerify();
-          return;
-        }
-        const n = parseInt(k, 10);
-        if (n >= 1 && n <= 6) this.hit(this.feeds[n - 1]);
-      });
-
-      this.nextIdle = performance.now() + 1500;
-      this.last = performance.now();
     },
-
-    ttl() {
-      return 6 - (this.progress || 0) * 2.2; // fica mais difícil ao longo do plantão
-    },
-
-    log(html) {
-      this.ui.ticker.innerHTML = `<span>${html}</span>`;
-    },
-
-    clockHours() {
-      if (this.mode === "play") return (18 + this.progress * 24) % 24; // começa ao entardecer
-      const d = new Date();
-      return d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600;
-    },
-
-    watch() {
-      this.ui.start.classList.remove("is-open");
-      this.mode = "idle";
-      this.ui.mode.textContent = "AO VIVO";
-    },
-
-    start() {
-      this.ui.start.classList.remove("is-open");
-      this.ui.end.classList.remove("is-open");
-      this.closeVerify(true);
-      this.feeds.forEach((f) => (f.walkers = []));
-      this.mode = "play";
-      this.ui.mode.textContent = "PLANTÃO";
-      this.t0 = performance.now();
-      this.dur = ((window.SEMELC && SEMELC.gameSeconds) || 45) * 1000;
-      this.progress = 0;
-      this.stats = { pts: 0, hits: 0, err: 0, times: [], combo: 0, best: 0, total: 0 };
-      this.nextSpawn = this.t0 + 900;
-      this.updateUI();
-      this.log(`<b class="t-ok">Plantão iniciado.</b> Verifique cada alerta e escolha o procedimento certo.`);
-      this.root.scrollIntoView({ behavior: "smooth", block: "center" });
-    },
-
-    finish() {
-      this.closeVerify(true);
-      this.mode = "end";
-      this.ui.mode.textContent = "AO VIVO";
-      this.feeds.forEach((f) => f.walkers.forEach((w) => { if (w.state === "walk") w.alert = false; }));
-      const s = this.stats;
-      const avg = s.times.length ? s.times.reduce((a, b) => a + b, 0) / s.times.length : 0;
-      const decided = s.hits + s.err;
-      const acc = decided ? s.hits / decided : 0;
-      let rank = "Operador em treinamento";
-      if (acc >= 0.9 && s.hits >= 8) rank = "Nível Central Semelc";
-      else if (acc >= 0.75 && s.hits >= 5) rank = "Operador atento";
-      else if (acc >= 0.5) rank = "Bom começo, operador";
-      $("#gRank").textContent = rank;
-      $("#rScore").textContent = s.pts;
-      $("#rAcc").textContent = decided ? `${Math.round(acc * 100)}%` : "—";
-      $("#rAvg").textContent = avg ? `${fmt(avg)}s` : "—";
-      $("#rBest").textContent = `x${s.best}`;
-      this.ui.end.classList.add("is-open");
-      this.nextIdle = performance.now() + 2500;
-    },
-
-    hit(feed) {
-      const now = performance.now();
-      const w = feed.activeAlert();
-      if (this.mode !== "play") {
-        if (w) this.autoResolve(feed, w, now);
-        return;
-      }
-      if (this.verifying) return;
-      if (!w) {
-        this.stats.combo = 0;
-        feed.pop("SEM OCORRÊNCIA", "bad");
-        this.updateUI();
-        return;
-      }
-      this.openVerify(feed, w, now);
-    },
-
-    openVerify(feed, w, now) {
-      w.hold = true;
-      w.holdAt = now;
-      this.verifying = { feed, w };
-      this.v.cam.textContent = `CAM ${pad(feed.idx + 1)} · ${feed.cfg.name}`;
-      this.v.box.classList.add("is-open");
-      this.v.box.setAttribute("aria-hidden", "false");
-      const r = this.v.canvas.getBoundingClientRect();
-      const d = Math.min(window.devicePixelRatio || 1, 2);
-      this.v.canvas.width = Math.max(1, Math.round(r.width * d));
-      this.v.canvas.height = Math.max(1, Math.round(r.height * d));
-      if (window.gsap) gsap.fromTo(this.v.box.firstElementChild, { scale: 0.9, y: 20 }, { scale: 1, y: 0, duration: 0.35, ease: "back.out(1.6)" });
-      this.v.box.querySelector("[data-act]").focus({ preventScroll: true });
-    },
-
-    closeVerify(silent) {
-      const v = this.verifying;
-      this.v.box.classList.remove("is-open");
-      this.v.box.setAttribute("aria-hidden", "true");
-      this.verifying = null;
-      if (v && !silent && v.w.state === "walk") {
-        // volta a correr o tempo do alerta
-        v.w.born += performance.now() - v.w.holdAt;
-        v.w.hold = false;
-      }
-    },
-
-    decide(act) {
-      if (!this.verifying) return;
-      const { feed, w } = this.verifying;
-      const now = performance.now();
-      this.closeVerify(true);
-      w.hold = false;
-      w.doneAt = now;
-      const info = KIND[w.kind];
-      const rt = (w.holdAt - w.born) / 1000;
-      const s = this.stats;
-      const hhmm = this.ui.clock.textContent;
-      const cam = `CAM ${pad(feed.idx + 1)} · ${feed.cfg.name}`;
-      if (info.act === act) {
-        const gain = 100 + Math.max(0, Math.round(60 - rt * 15)) + s.combo * 10;
-        s.pts += gain; s.hits++; s.combo++; s.best = Math.max(s.best, s.combo); s.times.push(rt);
-        w.state = "ok";
-        w.resLabel = info.ok;
-        feed.flash = 1;
-        feed.pop(`✓ +${gain}${s.combo >= 3 ? `  ·  x${s.combo}` : ""}`, "ok");
-        this.log(`[${hhmm}] ${cam} — <span class="t-ok">${info.log} (${fmt(rt)}s)</span>`);
-      } else {
-        s.pts = Math.max(0, s.pts - 50); s.err++; s.combo = 0;
-        w.state = "wrong";
-        feed.pop("✕ −50", "bad");
-        this.log(`[${hhmm}] ${cam} — <span class="t-bad">decisão incorreta: era ${info.name}</span>`);
-      }
-      this.updateUI();
-    },
-
-    autoResolve(feed, w, now) {
-      const info = KIND[w.kind];
-      w.state = "ok";
-      w.resLabel = info.ok;
-      w.doneAt = now;
-      feed.flash = 1;
-      feed.pop(`✓ ${info.ok}`, "ok");
-      this.log(`[${this.ui.clock.textContent}] CAM ${pad(feed.idx + 1)} · ${feed.cfg.name} — <span class="t-ok">central: ${info.log}</span>`);
-    },
-
-    updateUI() {
-      const s = this.stats;
-      if (!s) return;
-      this.ui.score.textContent = s.pts;
-      this.ui.hits.textContent = s.hits;
-      this.ui.miss.textContent = s.err;
-      this.ui.combo.textContent = `x${s.combo}`;
-      const avg = s.times.length ? s.times.reduce((a, b) => a + b, 0) / s.times.length : 0;
-      this.ui.avg.textContent = avg ? `${fmt(avg)}s` : "—";
-    },
-
-    spawnAlert(now, kind) {
-      const free = this.feeds.filter((f) => !f.activeAlert());
-      if (!free.length) return null;
+    ttl() { return 99; },
+    spawn(now) {
+      const free = this.feeds.filter((f) => !f.walkers.length);
+      if (!free.length) return;
       const f = free[(Math.random() * free.length) | 0];
-      const w = f.spawn(true, kind || pickKind());
+      const w = f.spawn(true, pickKind());
       w.born = now;
-      if (this.mode === "play") this.stats.total++;
-      this.log(`[${this.ui.clock.textContent}] CAM ${pad(f.idx + 1)} · ${f.cfg.name} — <span class="t-alert">movimento detectado</span>`);
+      setTimeout(() => {
+        if (w.state !== "walk") return;
+        w.state = "ok";
+        f.flash = 1;
+        setTimeout(() => { w.alert = false; w.state = "walk"; }, 900);
+      }, rand(1500, 2400));
       if (window.gsap) gsap.fromTo(f.el, { scale: 0.98 }, { scale: 1, duration: 0.4, ease: "elastic.out(1,.5)" });
-      return { f, w };
     },
-
-    drawVerify() {
-      const { feed, w } = this.verifying;
-      const b = w.box;
-      const c = this.v.canvas, x = this.vctx;
-      if (!b) return;
-      const aspect = c.width / c.height;
-      let sh = clamp(Math.max(b.h * 1.7, (b.w * 2.2) / aspect), feed.h * (feed.w / feed.dpr < 340 ? 0.7 : 0.45), feed.h);
-      let sw = sh * aspect;
-      if (sw > feed.w) { sw = feed.w; sh = sw / aspect; }
-      const sx = clamp(b.x + b.w / 2 - sw / 2, 0, feed.w - sw);
-      const sy = clamp(b.y + b.h / 2 - sh / 2, 0, feed.h - sh);
-      x.imageSmoothingEnabled = true;
-      x.drawImage(feed.canvas, sx, sy, sw, sh, 0, 0, c.width, c.height);
-      x.fillStyle = "rgba(0,0,0,.15)";
-      for (let y = 0; y < c.height; y += 3) x.fillRect(0, y, c.width, 1);
-      this.v.timer.textContent = `${fmt((performance.now() - w.born) / 1000)}s`;
-    },
-
     loop(now) {
       if (!this.visible) { this.raf = null; return; }
       this.raf = requestAnimationFrame((t) => this.loop(t));
       const dt = Math.min(0.05, (now - this.last) / 1000);
-      if (dt < 1 / 40) return; // ~30fps é suficiente para "CFTV"
+      if (dt < 1 / 40) return;
       this.last = now;
-
-      if (this.mode === "play") {
-        this.progress = clamp((now - this.t0) / this.dur, 0, 1);
-        this.ui.time.style.transform = `scaleX(${this.progress})`;
-        if (now >= this.nextSpawn && this.progress < 0.95) {
-          this.spawnAlert(now);
-          const gap = 2500 - this.progress * 1100;
-          this.nextSpawn = now + rand(gap * 0.75, gap * 1.2);
-          if (this.progress > 0.5 && Math.random() < 0.3) setTimeout(() => this.mode === "play" && this.spawnAlert(performance.now()), 400);
-        }
-        for (const f of this.feeds) for (const w of f.walkers) {
-          if (w.alert && w.state === "walk" && !w.hold && (now - w.born) / 1000 > w.ttl) {
-            if (w.kind === "intruso") {
-              w.state = "lost"; w.doneAt = now;
-              this.stats.err++; this.stats.combo = 0; this.stats.pts = Math.max(0, this.stats.pts - 40);
-              f.pop("✕ SEM RESPOSTA", "bad");
-              this.log(`[${this.ui.clock.textContent}] CAM ${pad(f.idx + 1)} · ${f.cfg.name} — <span class="t-bad">invasão sem resposta</span>`);
-              this.updateUI();
-            } else {
-              w.alert = false; // movimento sem risco saiu de cena
-            }
-          }
-        }
-        if (this.progress >= 1) this.finish();
-      } else {
-        this.ui.time.style.transform = "scaleX(0)";
-        if (now >= this.nextIdle) {
-          const f = this.feeds[(Math.random() * 6) | 0];
-          if (!f.walkers.length) {
-            const w = f.spawn(true, pickKind());
-            w.ttl = 99;
-            setTimeout(() => { if (w.state === "walk") this.autoResolve(f, w, performance.now()); }, rand(1400, 2200));
-          }
-          this.nextIdle = now + rand(2600, 4200);
-        }
+      if (now >= this.nextSpawn) {
+        this.spawn(now);
+        this.nextSpawn = now + rand(1100, 2200);
       }
-
-      const hrs = this.clockHours();
+      const p = ((now - this.t0) % this.cycle) / this.cycle;
+      if (this.bar) this.bar.style.transform = `scaleX(${p})`;
+      const hrs = (6 + p * 24) % 24;
       const hh = Math.floor(hrs), mm = Math.floor((hrs % 1) * 60), ss = Math.floor(((hrs * 60) % 1) * 60);
-      this.ui.clock.textContent = `${pad(hh)}:${pad(mm)}`;
       const light = clamp(Math.cos(((hrs - 13) / 12) * Math.PI) * 1.3 + 0.35, 0, 1);
-      const ir = this.irForced || light < 0.28;
-      const env = { light, ir, noise: this.noise, scan: this.scan, clockText: `${pad(hh)}:${pad(mm)}:${pad(ss)}` };
+      const env = { light, ir: light < 0.28, noise: this.noise, scan: this.scan, clockText: `${pad(hh)}:${pad(mm)}:${pad(ss)}` };
       for (const f of this.feeds) f.render(now, dt, env);
-      if (this.verifying) this.drawVerify();
     },
   };
 
-  window.Central = Game;
+  window.Central = Wall;
 })();
