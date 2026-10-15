@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Segurança Eletrônica em Araxá | Semelc</title>
+  <meta name="description" content="Segurança eletrônica para residências, empresas e propriedades rurais em Araxá e região. Conheça as soluções da Semelc, desde 1990.">
+  <meta name="theme-color" content="#f5f5f7">
+  <meta property="og:title" content="Segurança Eletrônica em Araxá | Semelc">
+  <meta property="og:description" content="Câmeras, alarmes, controle de acesso e monitoramento 24 horas. Há 36 anos protegendo Araxá e região.">
+  <meta property="og:image" content="assets/img/hero-casa.webp">
+  <meta property="og:locale" content="pt_BR">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,700;0,800;0,900;1,900&family=Nunito+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/img/hero-casa.webp">
+  <link rel="stylesheet" href="vendor/lenis.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="is-loading">
+
+  <!-- ================= PRELOADER: boot do sistema de segurança ================= -->
+  <div class="loader is-dark" id="loader" aria-hidden="true">
+    <div class="loader__grid"></div>
+    <div class="loader__center">
+      <div class="loader__ring">
+        <svg viewBox="0 0 200 200">
+          <circle class="ring-bg" cx="100" cy="100" r="90"/>
+          <circle class="ring-fg" id="loaderRing" cx="100" cy="100" r="90"/>
+          <g class="ring-ticks"></g>
+        </svg>
+        <div class="loader__count"><span id="loaderCount">00</span><small>%</small></div>
+      </div>
+      <ul class="loader__log" id="loaderLog">
+        <li>conectando câmeras</li>
+        <li>armando sensores</li>
+        <li>validando controle de acesso</li>
+        <li>central 24h</li>
+      </ul>
+    </div>
+    <div class="loader__corner tl">SEMELC · SYS v36</div>
+    <div class="loader__corner tr">ARAXÁ · MG</div>
+    <div class="loader__corner bl">DESDE 1990</div>
+    <div class="loader__corner br"><span class="rec-dot"></span> REC</div>
+  </div>
+  <div class="iris" id="iris" aria-hidden="true"></div>
+
+  <!-- Cursor tipo mira (somente desktop) -->
+  <div class="cursor" aria-hidden="true">
+    <div class="cursor__dot"></div>
+    <div class="cursor__ring"><span class="cursor__label"></span></div>
+  </div>
+
+  <!-- ================= HEADER ================= -->
+  <header class="header" id="header">
+    <a href="#inicio" class="brand" aria-label="Semelc — início">
+      <!-- Para usar a logo oficial: salve o arquivo como assets/logo.png (ou .svg e ajuste o src). -->
+      <img class="brand__img" src="assets/logo.png" alt="Semelc" onerror="this.remove()">
+      <span class="brand__text"><b>SEMELC</b><small>Gestão de riscos</small></span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#solucoes" data-cursor="ir">Soluções</a>
+      <a href="#historia" data-cursor="ir">Desde 1990</a>
+      <a href="#central" data-cursor="ir">Central 24h</a>
+      <a href="#faq" data-cursor="ir">Dúvidas</a>
+    </nav>
+    <a href="#contato" class="btn btn--sm btn--primary js-cta" data-msg="Olá! Gostaria de solicitar um orçamento de segurança eletrônica." data-cursor="falar">Solicitar orçamento</a>
+    <button class="burger" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+  </header>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#solucoes">Soluções</a>
+    <a href="#historia">Desde 1990</a>
+    <a href="#central">Central 24h</a>
+    <a href="#faq">Dúvidas</a>
+    <a href="#contato" class="btn btn--primary js-cta" data-msg="Olá! Gostaria de solicitar um orçamento de segurança eletrônica.">Solicitar orçamento</a>
+  </div>
+
+  <main id="smooth">
+
+    <!-- ================= DOBRA 1 | HERO ================= -->
+    <section class="hero" id="inicio">
+      <canvas class="hero__radar" id="heroRadar" aria-hidden="true"></canvas>
+      <div class="container hero__top">
+        <p class="eyebrow hero-anim"><span class="pulse"></span> Araxá e região · desde 1990</p>
+        <h1 class="hero__title" id="heroTitle">Segurança eletrônica para <em>residências</em>, <em>empresas</em> e <em>propriedades rurais</em> <span class="hl">em Araxá</span></h1>
+        <div class="hero__row">
+          <p class="hero__lead hero-anim">Câmeras, alarmes, controle de acesso e monitoramento 24 horas para diferentes necessidades de segurança. Há 36 anos, a Semelc atende Araxá e região com soluções para proteger casas, empresas e propriedades rurais.</p>
+          <div class="hero__ctas hero-anim">
+            <a href="#contato" class="btn btn--primary btn--lg magnetic js-cta" data-msg="Olá! Gostaria de solicitar um orçamento de segurança eletrônica." data-cursor="falar">
+              <span>Solicitar orçamento</span><i class="btn__arrow">→</i>
+            </a>
+            <a href="#central" class="btn btn--ghost btn--lg" data-cursor="assistir"><span class="rec-dot"></span><span>Ver a central em ação</span></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visor de câmera que expande no scroll -->
+      <div class="viewfinder-wrap">
+        <div class="viewfinder" id="viewfinder">
+          <img src="assets/img/hero-casa.webp" alt="Residência protegida com acesso monitorado" class="viewfinder__img">
+          <div class="scanlines"></div>
+          <canvas class="viewfinder__fx" id="heroFx" aria-hidden="true"></canvas>
+          <div class="hud">
+            <span class="hud__c tl"></span><span class="hud__c tr"></span><span class="hud__c bl"></span><span class="hud__c br"></span>
+            <div class="hud__top">
+              <span><span class="rec-dot"></span> REC · CAM 01 — ENTRADA</span>
+              <span class="js-clock">00:00:00</span>
+            </div>
+            <div class="hud__bottom">
+              <span>1080P · 30FPS · IR AUTO</span>
+              <span class="hud__status">SISTEMA ARMADO</span>
+            </div>
+            <div class="hud__cross"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__stats container">
+        <div><b data-count="36">0</b><span>anos em Araxá e região</span></div>
+        <div><b>24<small>h</small></b><span>central própria de monitoramento</span></div>
+        <div><b data-count="92" data-suffix="%">0</b><span>de renovação de contratos</span></div>
+        <div><b>3</b><span>realidades: casa, empresa e campo</span></div>
+      </div>
+    </section>
+
+    <!-- Faixa marquee -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Câmeras</span><i>✦</i><span>Alarmes</span><i>✦</i><span>Controle de acesso</span><i>✦</i><span>Monitoramento 24h</span><i>✦</i><span>Central própria</span><i>✦</i>
+        <span>Câmeras</span><i>✦</i><span>Alarmes</span><i>✦</i><span>Controle de acesso</span><i>✦</i><span>Monitoramento 24h</span><i>✦</i><span>Central própria</span><i>✦</i>
+      </div>
+    </div>
+
+    <!-- ================= DOBRA 2 | IDENTIFICAÇÃO DA NECESSIDADE ================= -->
+    <section class="section need" id="necessidade">
+      <div class="container">
+        <div class="section__head">
+          <p class="eyebrow">01 — Sua necessidade</p>
+          <h2 class="title split">O que você precisa proteger?</h2>
+          <p class="lead reveal">A segurança ideal depende do ambiente, da rotina e dos riscos de cada patrimônio.</p>
+        </div>
+        <div class="need__grid">
+          <a href="#residencial" class="need-card tilt" data-cursor="ver" data-target="residencial">
+            <div class="need-card__media"><img src="assets/img/hero-casa.webp" alt="" loading="lazy"><div class="scanlines"></div><span class="need-card__scan"></span></div>
+            <div class="need-card__hud"><span>CAM · RES</span><span class="need-card__status">● ARMADO</span></div>
+            <div class="need-card__body">
+              <span class="need-card__n">01</span>
+              <h3>Residências</h3>
+              <p>Família, casa e acessos.</p>
+              <span class="need-card__go">Ver soluções <i>→</i></span>
+            </div>
+          </a>
+          <a href="#empresarial" class="need-card tilt" data-cursor="ver" data-target="empresarial">
+            <div class="need-card__media"><img src="assets/img/empresa-fachada.webp" alt="" loading="lazy"><div class="scanlines"></div><span class="need-card__scan"></span></div>
+            <div class="need-card__hud"><span>CAM · EMP</span><span class="need-card__status">● ARMADO</span></div>
+            <div class="need-card__body">
+              <span class="need-card__n">02</span>
+              <h3>Empresas</h3>
+              <p>Operação, equipamentos e circulação.</p>
+              <span class="need-card__go">Ver soluções <i>→</i></span>
+            </div>
+          </a>
+          <a href="#rural" class="need-card tilt" data-cursor="ver" data-target="rural">
+            <div class="need-card__media"><img src="assets/img/rural-porteira.webp" alt="" loading="lazy"><div class="scanlines"></div><span class="need-card__scan"></span></div>
+            <div class="need-card__hud"><span>CAM · RUR</span><span class="need-card__status">● ARMADO</span></div>
+            <div class="need-card__body">
+              <span class="need-card__n">03</span>
+              <h3>Áreas rurais</h3>
+              <p>Extensões, estruturas e acessos.</p>
+              <span class="need-card__go">Ver soluções <i>→</i></span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOBRA 3 | PROBLEMA E BENEFÍCIO ================= -->
+    <section class="section problem is-dark" id="realidade">
+      <div class="container">
+        <p class="eyebrow">02 — A realidade</p>
+        <h2 class="statement" id="statement">Nem sempre é possível estar presente. Sua segurança precisa considerar isso.</h2>
+        <div class="problem__cols">
+          <p class="lead reveal">Uma área sem supervisão, um acesso desprotegido ou um ambiente vazio podem representar riscos diferentes. A tecnologia certa ajuda a ampliar a visibilidade e o controle sobre esses pontos.</p>
+          <div class="realities">
+            <h3 class="realities__title reveal">Para cada realidade, uma necessidade</h3>
+            <div class="reality reveal">
+              <span class="reality__ico"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span>
+              <p><b>Em casa,</b> acompanhar acessos e ambientes mesmo à distância.</p>
+            </div>
+            <div class="reality reveal">
+              <span class="reality__ico"><svg viewBox="0 0 24 24"><path d="M3 21V8l6 3V8l6 3V4h6v17z"/></svg></span>
+              <p><b>Na empresa,</b> controlar a circulação e proteger áreas importantes para a operação.</p>
+            </div>
+            <div class="reality reveal">
+              <span class="reality__ico"><svg viewBox="0 0 24 24"><path d="M2 20h20M4 20V12l5-4 5 4v8M14 20v-5h6v5M17 9a3 3 0 1 0 0-.01"/></svg></span>
+              <p><b>Na propriedade rural,</b> ampliar a visibilidade sobre locais distantes e pontos estratégicos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOBRA 4 | SOLUÇÕES POR PÚBLICO (scroll horizontal) ================= -->
+    <section class="solutions" id="solucoes">
+      <div class="solutions__intro container">
+        <p class="eyebrow">03 — Soluções</p>
+        <h2 class="title split">Tecnologia aplicada à necessidade de cada patrimônio.</h2>
+        <div class="solutions__progress" aria-hidden="true"><span id="solProgress"></span></div>
+      </div>
+      <div class="solutions__pin" id="solPin">
+        <div class="solutions__track" id="solTrack">
+
+          <article class="panel" id="residencial">
+            <div class="panel__media">
+              <img src="assets/img/residencial-camera.webp" alt="Câmera de segurança instalada em residência" loading="lazy">
+              <div class="scanlines"></div>
+              <div class="panel__tag"><span class="rec-dot"></span> CAM 02 · RESIDENCIAL</div>
+            </div>
+            <div class="panel__body">
+              <span class="panel__n">01 / 03</span>
+              <h3>Segurança residencial</h3>
+              <p class="panel__lead">Proteção para sua casa, com soluções que ajudam a acompanhar ambientes e controlar acessos.</p>
+              <ul class="chips"><li>Câmeras</li><li>Alarmes</li><li>Monitoramento</li><li>Controle de acesso</li></ul>
+              <p class="panel__note">Câmeras, alarmes, monitoramento e controle de acesso, conforme a necessidade.</p>
+              <a href="#contato" class="btn btn--primary magnetic js-cta" data-msg="Olá! Quero proteger minha casa. Gostaria de um orçamento de segurança residencial." data-cursor="falar"><span>Quero proteger minha casa</span><i class="btn__arrow">→</i></a>
+            </div>
+          </article>
+
+          <article class="panel" id="empresarial">
+            <div class="panel__media">
+              <img src="assets/img/empresarial-acesso.webp" alt="Câmeras e controle de acesso em ambiente empresarial" loading="lazy">
+              <div class="scanlines"></div>
+              <div class="panel__tag"><span class="rec-dot"></span> CAM 04 · EMPRESARIAL</div>
+            </div>
+            <div class="panel__body">
+              <span class="panel__n">02 / 03</span>
+              <h3>Segurança empresarial</h3>
+              <p class="panel__lead">Mais controle sobre acessos, circulação de pessoas e áreas críticas do negócio.</p>
+              <ul class="chips"><li>Controle de acesso</li><li>Circulação</li><li>Áreas críticas</li><li>Monitoramento</li></ul>
+              <p class="panel__note">Soluções para instalações comerciais, empresas e operações.</p>
+              <a href="#contato" class="btn btn--primary magnetic js-cta" data-msg="Olá! Quero proteger minha empresa. Gostaria de um orçamento de segurança empresarial." data-cursor="falar"><span>Quero proteger minha empresa</span><i class="btn__arrow">→</i></a>
+            </div>
+          </article>
+
+          <article class="panel" id="rural">
+            <div class="panel__media">
+              <img src="assets/img/rural-camera.webp" alt="Câmera com painel solar protegendo acesso de propriedade rural" loading="lazy">
+              <div class="scanlines"></div>
+              <div class="panel__tag"><span class="rec-dot"></span> CAM 06 · RURAL</div>
+            </div>
+            <div class="panel__body">
+              <span class="panel__n">03 / 03</span>
+              <h3>Segurança rural</h3>
+              <p class="panel__lead">Soluções que consideram as distâncias, os acessos e as particularidades de cada propriedade.</p>
+              <ul class="chips"><li>Longas distâncias</li><li>Porteiras e acessos</li><li>Estruturas</li><li>Pontos estratégicos</li></ul>
+              <p class="panel__note">Projeto definido de acordo com as áreas e os pontos que precisam de proteção.</p>
+              <a href="#contato" class="btn btn--primary magnetic js-cta" data-msg="Olá! Quero proteger minha propriedade rural. Gostaria de um orçamento de segurança rural." data-cursor="falar"><span>Quero proteger minha propriedade</span><i class="btn__arrow">→</i></a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOBRA 5 | PIONEIRISMO (linha do tempo) ================= -->
+    <!-- Substituir os itens da linha do tempo por marcos reais e fotos históricas da Semelc assim que o cliente enviar. -->
+    <section class="section history" id="historia">
+      <div class="container history__grid">
+        <div class="history__sticky">
+          <p class="eyebrow">04 — Pioneirismo</p>
+          <div class="history__year" aria-hidden="true"><span id="yearCounter">1990</span></div>
+          <h2 class="title split">Desde 1990, acompanhando a evolução da segurança eletrônica.</h2>
+          <p class="lead reveal">Quando a tecnologia de segurança ainda era pouco acessível para muita gente, a Semelc já atuava no mercado de Araxá. Ao longo dos anos, acompanhou as transformações do setor e as novas possibilidades de proteger diferentes patrimônios.</p>
+        </div>
+        <ol class="timeline" id="timeline">
+          <li class="timeline__line" aria-hidden="true"><span id="timelineFill"></span></li>
+          <li class="tl-item" data-year="1990">
+            <span class="tl-item__dot"></span>
+            <span class="tl-item__when">1990</span>
+            <div class="tl-item__card">
+              <svg class="tl-item__ico" viewBox="0 0 48 48"><path d="M24 6v4M10 12l3 3M38 12l-3 3"/><path d="M14 34v-8a10 10 0 0 1 20 0v8"/><rect x="10" y="34" width="28" height="6" rx="2"/></svg>
+              <h4>A Semelc começa em Araxá</h4>
+              <p>Início da atuação em segurança eletrônica, quando a tecnologia ainda era pouco acessível.</p>
+            </div>
+          </li>
+          <li class="tl-item" data-year="1998">
+            <span class="tl-item__dot"></span>
+            <span class="tl-item__when">Alarmes</span>
+            <div class="tl-item__card">
+              <svg class="tl-item__ico" viewBox="0 0 48 48"><rect x="10" y="10" width="28" height="28" rx="4"/><circle cx="24" cy="24" r="6"/><path d="M24 14v2M24 32v2"/></svg>
+              <h4>Sensores e alarmes</h4>
+              <p>Centrais de alarme e sensores passam a proteger cada vez mais casas e comércios.</p>
+            </div>
+          </li>
+          <li class="tl-item" data-year="2006">
+            <span class="tl-item__dot"></span>
+            <span class="tl-item__when">CFTV</span>
+            <div class="tl-item__card">
+              <svg class="tl-item__ico" viewBox="0 0 48 48"><path d="M6 16h26l8 6-8 6H6z"/><circle cx="34" cy="22" r="2"/><path d="M14 28v8h-6"/></svg>
+              <h4>Circuito fechado de TV</h4>
+              <p>As câmeras ganham espaço e a gravação de imagens se torna parte da rotina de proteção.</p>
+            </div>
+          </li>
+          <li class="tl-item" data-year="2014">
+            <span class="tl-item__dot"></span>
+            <span class="tl-item__when">Digital</span>
+            <div class="tl-item__card">
+              <svg class="tl-item__ico" viewBox="0 0 48 48"><path d="M8 14h32"/><path d="M12 14a12 12 0 0 0 24 0"/><circle cx="24" cy="18" r="4"/></svg>
+              <h4>Imagem digital e acesso remoto</h4>
+              <p>Câmeras em alta definição e acompanhamento das imagens à distância.</p>
+            </div>
+          </li>
+          <li class="tl-item" data-year="2026">
+            <span class="tl-item__dot"></span>
+            <span class="tl-item__when">Hoje</span>
+            <div class="tl-item__card">
+              <svg class="tl-item__ico" viewBox="0 0 48 48"><rect x="14" y="6" width="20" height="36" rx="4"/><path d="M21 36h6"/><circle cx="24" cy="20" r="5"/><path d="M24 15v-3"/></svg>
+              <h4>Central própria 24 horas</h4>
+              <p>Câmeras, alarmes, controle de acesso e monitoramento integrados. 36 anos de experiência.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+      <div class="container">
+        <p class="history__quote reveal">A experiência trouxe conhecimento. <span>A evolução do mercado trouxe novas possibilidades.</span></p>
+      </div>
+    </section>
+
+    <!-- ================= DOBRA 6 | CENTRAL 24H + JOGO ================= -->
+    <section class="section central is-dark" id="central">
+      <div class="container">
+        <div class="central__head">
+          <div>
+            <p class="eyebrow">05 — Diferencial operacional</p>
+            <h2 class="title split">Monitoramento 24 horas com central própria</h2>
+            <p class="lead reveal">A segurança do seu patrimônio conta com uma estrutura preparada para acompanhar os sistemas de monitoramento ao longo do dia e da noite.</p>
+          </div>
+          <ul class="central__list">
+            <li class="reveal"><span>01</span>Central própria de monitoramento, com operação 24 horas.</li>
+            <li class="reveal"><span>02</span>Acompanhamento dos sistemas de segurança, conforme o serviço contratado.</li>
+            <li class="reveal"><span>03</span>Procedimentos de atendimento a ocorrências, definidos de acordo com a solução contratada.</li>
+          </ul>
+        </div>
+
+        <!-- Console gamificado -->
+        <div class="console" id="console">
+          <div class="console__bar">
+            <div class="console__title"><span class="rec-dot"></span> CENTRAL SEMELC · <span id="gMode">AO VIVO</span></div>
+            <div class="console__meters">
+              <div><small>Relógio</small><b id="gClock">00:00</b></div>
+              <div><small>Verificadas</small><b id="gScore">0</b></div>
+              <div><small>Perdidas</small><b id="gMiss">0</b></div>
+              <div><small>Resposta média</small><b id="gAvg">—</b></div>
+              <div><small>Sequência</small><b id="gCombo">x0</b></div>
+            </div>
+            <button class="console__ir" id="gIR" aria-pressed="false" data-cursor="IR">IR · visão noturna</button>
+          </div>
+          <div class="console__time"><span id="gTime"></span></div>
+          <div class="console__wall" id="gWall">
+            <!-- canvases criados via JS -->
+          </div>
+          <div class="console__ticker" id="gTicker"><span>Sistema operacional · 6 câmeras online · aguardando eventos</span></div>
+
+          <div class="console__overlay is-open" id="gStart">
+            <div class="console__card">
+              <p class="eyebrow">Modo operador</p>
+              <h3>Assuma a central por 30 segundos</h3>
+              <p>Um dia inteiro passa em meio minuto. Quando uma câmera detectar movimento, <b>clique no alerta</b> para verificar a ocorrência antes que ela expire.</p>
+              <div class="console__keys"><span><b>Clique</b> verifica</span><span><b>Teclas 1–6</b> também</span><span><b>Sequências</b> valem bônus</span></div>
+              <button class="btn btn--primary btn--lg" id="gPlay" data-cursor="iniciar"><span>Iniciar plantão</span><i class="btn__arrow">▶</i></button>
+              <button class="link-btn" id="gWatch">Só assistir às câmeras</button>
+            </div>
+          </div>
+          <div class="console__overlay" id="gEnd">
+            <div class="console__card">
+              <p class="eyebrow">Fim do plantão · 24h concluídas</p>
+              <h3 id="gRank">Operador</h3>
+              <div class="console__result">
+                <div><b id="rScore">0</b><small>ocorrências verificadas</small></div>
+                <div><b id="rAvg">0s</b><small>tempo médio de resposta</small></div>
+                <div><b id="rBest">x0</b><small>melhor sequência</small></div>
+              </div>
+              <p class="console__msg">Na Central Semelc, isso é rotina: <b>24 horas por dia</b>, com procedimentos definidos para cada solução contratada.</p>
+              <div class="console__end-ctas">
+                <a href="#contato" class="btn btn--primary js-cta" data-msg="Olá! Conheci a central 24h no site e gostaria de saber mais sobre o monitoramento." data-cursor="falar"><span>Quero monitoramento 24h</span><i class="btn__arrow">→</i></a>
+                <button class="btn btn--ghost" id="gAgain" data-cursor="de novo"><span>Jogar de novo</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="central__disclaimer">Simulação ilustrativa da rotina de monitoramento. Imagens meramente demonstrativas.</p>
+      </div>
+    </section>
+
+    <!-- ================= DOBRA 7 | PROVA SOCIAL ================= -->
+    <section class="section proof" id="prova">
+      <div class="container">
+        <div class="section__head">
+          <p class="eyebrow">06 — Prova social</p>
+          <h2 class="title split">Quem conhece o trabalho da Semelc pode contar essa história.</h2>
+        </div>
+        <div class="proof__stats">
+          <div class="stat reveal">
+            <svg class="stat__ring" viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff2a1a"/><stop offset="1" stop-color="#a30000"/></linearGradient></defs><circle cx="60" cy="60" r="52" class="bg"/><circle cx="60" cy="60" r="52" class="fg" id="ring92"/></svg>
+            <div class="stat__txt"><b data-count="92" data-suffix="%">0%</b><span>de renovação de contratos</span></div>
+          </div>
+          <div class="stat reveal">
+            <div class="stat__bars" aria-hidden="true" id="bars92"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="stat__txt"><b data-count="9.2" data-decimals="1" data-suffix="/10">0</b><span>de satisfação na pesquisa de 2026</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Espaços para os prints reais de clientes: troque cada .print__ph por <img src="assets/prints/print-01.webp" alt="Mensagem de cliente"> -->
+      <div class="prints" aria-label="Mensagens de clientes">
+        <div class="prints__track">
+          <figure class="print"><div class="print__ph"><span>Print de cliente 01</span></div></figure>
+          <figure class="print"><div class="print__ph"><span>Print de cliente 02</span></div></figure>
+          <figure class="print"><div class="print__ph"><span>Print de cliente 03</span></div></figure>
+          <figure class="print"><div class="print__ph"><span>Print de cliente 04</span></div></figure>
+          <figure class="print"><div class="print__ph"><span>Print de cliente 05</span></div></figure>
+          <figure class="print"><div class="print__ph"><span>Print de cliente 06</span></div></figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOBRA 8 | FAQ ================= -->
+    <!-- Antes de publicar: confirmar as respostas com a operação comercial e acrescentar dúvidas reais do atendimento. -->
+    <section class="section faq" id="faq">
+      <div class="container faq__grid">
+        <div>
+          <p class="eyebrow">07 — Dúvidas</p>
+          <h2 class="title split">Dúvidas frequentes sobre segurança eletrônica</h2>
+        </div>
+        <div class="faq__list">
+          <details class="faq__item reveal">
+            <summary data-cursor="abrir"><span>A Semelc atende somente Araxá?</span><i></i></summary>
+            <div class="faq__a"><p>A empresa atende Araxá e região. A disponibilidade para outras localidades deve ser confirmada conforme o endereço e o serviço.</p></div>
+          </details>
+          <details class="faq__item reveal">
+            <summary data-cursor="abrir"><span>Como saber qual solução é adequada para meu imóvel ou empresa?</span><i></i></summary>
+            <div class="faq__a"><p>A indicação depende das características do local, dos pontos que precisam de proteção e das necessidades de monitoramento.</p></div>
+          </details>
+          <details class="faq__item reveal">
+            <summary data-cursor="abrir"><span>Posso contratar monitoramento sem instalar todos os equipamentos de uma vez?</span><i></i></summary>
+            <div class="faq__a"><p>A possibilidade depende da solução e das condições técnicas do projeto. A equipe pode avaliar o cenário para orientar as opções disponíveis.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOBRA 9 | CTA FINAL ================= -->
+    <section class="cta-final is-dark" id="contato">
+      <canvas class="cta-final__radar" id="ctaRadar" aria-hidden="true"></canvas>
+      <div class="container cta-final__inner">
+        <p class="eyebrow"><span class="pulse"></span> Fale com a Semelc</p>
+        <h2 class="cta-final__title split">Proteja seu patrimônio com uma solução pensada para sua realidade.</h2>
+        <p class="lead reveal">Fale com a Semelc e descubra quais opções de segurança eletrônica fazem sentido para você.</p>
+        <div class="cta-final__pick reveal" role="group" aria-label="Escolha o que você quer proteger">
+          <button class="pick is-active" data-pick="Olá! Gostaria de solicitar uma avaliação de segurança eletrônica para minha casa.">Minha casa</button>
+          <button class="pick" data-pick="Olá! Gostaria de solicitar uma avaliação de segurança eletrônica para minha empresa.">Minha empresa</button>
+          <button class="pick" data-pick="Olá! Gostaria de solicitar uma avaliação de segurança eletrônica para minha propriedade rural.">Propriedade rural</button>
+        </div>
+        <a href="#contato" class="btn btn--primary btn--xl magnetic js-cta" id="finalCta" data-msg="Olá! Gostaria de solicitar uma avaliação de segurança eletrônica para minha casa." data-cursor="falar">
+          <span>Solicitar uma avaliação</span><i class="btn__arrow">→</i>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer is-dark">
+    <div class="container footer__inner">
+      <a href="#inicio" class="brand">
+        <img class="brand__img" src="assets/logo.png" alt="Semelc" onerror="this.remove()">
+        <span class="brand__text"><b>SEMELC</b><small>Gestão de riscos</small></span>
+      </a>
+      <p>Segurança eletrônica para residências, empresas e propriedades rurais em Araxá e região. Desde 1990.</p>
+      <p class="footer__copy">© <span id="year">2026</span> Semelc. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Botão flutuante -->
+  <a href="#contato" class="fab js-cta" data-msg="Olá! Vim pelo site e gostaria de falar com a Semelc." aria-label="Falar com a Semelc pelo WhatsApp" data-cursor="falar">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6a10.6 10.6 0 0 1-5.4-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7a.6.6 0 0 0 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.9 1 3.9.8a3.3 3.3 0 0 0 2.2-1.5 2.7 2.7 0 0 0 .2-1.5c-.1-.2-.3-.3-.6-.4z"/></svg>
+  </a>
+
+  <script src="vendor/gsap.min.js"></script>
+  <script src="vendor/ScrollTrigger.min.js"></script>
+  <script src="vendor/SplitText.min.js"></script>
+  <script src="vendor/lenis.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/central.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
