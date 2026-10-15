@@ -376,8 +376,8 @@
         onToggle: (s) => it.classList.toggle("is-active", s.isActive || s.progress > 0),
         end: "max",
       });
-      gsap.from($(".tl-item__card", it), {
-        x: 60, autoAlpha: 0, duration: 1, ease: "expo.out",
+      gsap.from($(".tl-item__when", it), {
+        x: 40, autoAlpha: 0, duration: 1, ease: "expo.out",
         scrollTrigger: { trigger: it, start: "top 80%", once: true },
       });
     });

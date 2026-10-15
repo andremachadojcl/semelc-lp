@@ -723,6 +723,8 @@ body::after {
   .statement .word { color: var(--text); }
 }
 
-/* Linha do tempo: cartões só com o ícone do equipamento */
-.tl-item__card { display: flex; align-items: center; justify-content: center; min-height: 110px; }
-.tl-item__card .tl-item__ico { width: 60px; height: 60px; margin: 0; }
+/* Linha do tempo: só os anos ao longo da linha */
+.tl-item { padding-bottom: clamp(64px, 12vh, 120px); }
+.tl-item__when { display: block; font-family: var(--font-display); font-weight: 900; font-size: clamp(28px, 3vw, 40px); letter-spacing: -.02em; line-height: 1; color: var(--line-2); transition: color .4s; }
+.tl-item.is-active .tl-item__when { color: var(--accent-text); }
+.tl-item__dot { top: 8px; }
