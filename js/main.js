@@ -323,38 +323,19 @@
       scrollTrigger: { trigger: ".realities", start: "top 80%", once: true },
     });
 
-    // Soluções: scroll horizontal no desktop
-    const mm = gsap.matchMedia();
-    mm.add("(min-width: 901px)", () => {
-      const tr = $("#solTrack");
-      const dist = () => tr.scrollWidth - window.innerWidth;
-      const tween = gsap.to(tr, {
-        x: () => -dist(), ease: "none",
-        scrollTrigger: {
-          trigger: "#solPin", start: "top top", end: () => `+=${dist()}`,
-          pin: true, scrub: 1, invalidateOnRefresh: true, anticipatePin: 1,
-          onUpdate: (s) => gsap.set("#solProgress", { scaleX: s.progress }),
-        },
+    // Soluções: blocos empilhados, rolagem normal da página
+    $$(".panel").forEach((p, i) => {
+      gsap.fromTo($(".panel__media", p), { xPercent: i % 2 ? 6 : -6, autoAlpha: 0 }, {
+        xPercent: 0, autoAlpha: 1, duration: 1.2, ease: "expo.out",
+        scrollTrigger: { trigger: p, start: "top 80%", once: true },
       });
-      solST = tween.scrollTrigger;
-      $$(".panel").forEach((p) => {
-        gsap.fromTo($("img", p), { xPercent: -8 }, {
-          xPercent: 8, ease: "none",
-          scrollTrigger: { trigger: p, containerAnimation: tween, start: "left right", end: "right left", scrub: true },
-        });
-        gsap.from($$(".panel__body > *", p), {
-          y: 50, autoAlpha: 0, stagger: 0.06, duration: 0.9, ease: "power3.out",
-          scrollTrigger: { trigger: p, containerAnimation: tween, start: "left 60%", once: true },
-        });
+      gsap.fromTo($("img", p), { yPercent: -6 }, {
+        yPercent: 6, ease: "none",
+        scrollTrigger: { trigger: p, start: "top bottom", end: "bottom top", scrub: true },
       });
-      return () => { solST = null; };
-    });
-    mm.add("(max-width: 900px)", () => {
-      $$(".panel").forEach((p) => {
-        gsap.from($$(".panel__body > *", p), {
-          y: 40, autoAlpha: 0, stagger: 0.06, duration: 0.9, ease: "power3.out",
-          scrollTrigger: { trigger: p, start: "top 75%", once: true },
-        });
+      gsap.from($$(".panel__body > *", p), {
+        y: 40, autoAlpha: 0, stagger: 0.06, duration: 0.9, ease: "power3.out",
+        scrollTrigger: { trigger: p, start: "top 75%", once: true },
       });
     });
 
