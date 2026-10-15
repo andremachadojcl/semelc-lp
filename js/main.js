@@ -24,6 +24,7 @@
     }
   }
   $$(".js-cta").forEach(wireCta);
+  window.SemelcWireCta = wireCta;
 
   /* ---------- Smooth scroll (Lenis) ---------- */
   let lenis = null;
@@ -457,6 +458,8 @@
     if (lenis) lenis.start();
     buildScroll();
     if (window.Central) window.Central.init();
+    if (window.Simulador) window.Simulador.init();
+    if (window.Replay) window.Replay.init();
     ScrollTrigger.refresh();
   }
 
@@ -485,7 +488,8 @@
   const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
 
   const boot = gsap.timeline({ paused: true });
-  boot.to(prog, {
+  boot.fromTo(".loader__logo", { autoAlpha: 0, y: 20, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.7)" })
+    .to(prog, {
     v: 100, duration: 2.4, ease: "power2.inOut",
     onUpdate: () => {
       const v = Math.round(prog.v);
@@ -497,7 +501,7 @@
         if (v >= thr && !li.dataset.status) li.dataset.status = statuses[i];
       });
     },
-  })
+  }, 0.2)
     .to(".loader__center", { scale: 0.9, autoAlpha: 0, duration: 0.5, ease: "power3.in" }, "+=0.15")
     .to(".loader__corner", { autoAlpha: 0, duration: 0.3 }, "<")
     // obturador abrindo (duas lâminas)

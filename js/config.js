@@ -7,5 +7,5 @@ window.SEMELC = {
   whatsapp: "",
 
   // Duração do "plantão" do jogo da central, em segundos.
-  gameSeconds: 30,
+  gameSeconds: 45,
 };

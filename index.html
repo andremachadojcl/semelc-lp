@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,700;0,800;0,900;1,900&family=Nunito+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="preload" as="image" href="assets/img/hero-casa.webp">
   <link rel="stylesheet" href="vendor/lenis.css">
   <link rel="stylesheet" href="css/style.css">
@@ -24,6 +25,7 @@
   <div class="loader is-dark" id="loader" aria-hidden="true">
     <div class="loader__grid"></div>
     <div class="loader__center">
+      <img class="loader__logo" src="assets/logo-lg.webp" alt="">
       <div class="loader__ring">
         <svg viewBox="0 0 200 200">
           <circle class="ring-bg" cx="100" cy="100" r="90"/>
@@ -55,12 +57,12 @@
   <!-- ================= HEADER ================= -->
   <header class="header" id="header">
     <a href="#inicio" class="brand" aria-label="Semelc — início">
-      <!-- Para usar a logo oficial: salve o arquivo como assets/logo.png (ou .svg e ajuste o src). -->
-      <img class="brand__img" src="assets/logo.png" alt="Semelc" onerror="this.remove()">
+      <img class="brand__img" src="assets/logo.webp" alt="Semelc" onerror="this.remove()">
       <span class="brand__text"><b>SEMELC</b><small>Gestão de riscos</small></span>
     </a>
     <nav class="nav" aria-label="Principal">
       <a href="#solucoes" data-cursor="ir">Soluções</a>
+      <a href="#simulador" data-cursor="ir">Simulador</a>
       <a href="#historia" data-cursor="ir">Desde 1990</a>
       <a href="#central" data-cursor="ir">Central 24h</a>
       <a href="#faq" data-cursor="ir">Dúvidas</a>
@@ -70,6 +72,7 @@
   </header>
   <div class="mobile-menu" id="mobileMenu">
     <a href="#solucoes">Soluções</a>
+    <a href="#simulador">Simulador</a>
     <a href="#historia">Desde 1990</a>
     <a href="#central">Central 24h</a>
     <a href="#faq">Dúvidas</a>
@@ -263,6 +266,82 @@
       </div>
     </section>
 
+    <!-- ================= SIMULADOR (interativo) ================= -->
+    <section class="section simulator is-dark" id="simulador">
+      <div class="container">
+        <div class="section__head simulator__head">
+          <div>
+            <p class="eyebrow">Simulador · monte seu projeto</p>
+            <h2 class="title split">Monte a proteção do seu patrimônio.</h2>
+          </div>
+          <p class="lead reveal">Escolha o tipo de imóvel, posicione câmeras, sensores e controle de acesso e teste o projeto numa madrugada simulada. No fim, envie o resultado para a Semelc avaliar.</p>
+        </div>
+
+        <div class="sim">
+          <div class="sim__top">
+            <div class="sim__tabs" role="tablist" aria-label="Tipo de patrimônio">
+              <button class="is-active" role="tab" aria-selected="true" data-sim-map="casa">Casa</button>
+              <button role="tab" aria-selected="false" data-sim-map="empresa">Empresa</button>
+              <button role="tab" aria-selected="false" data-sim-map="rural">Rural</button>
+            </div>
+            <ol class="sim__steps" aria-label="Etapas">
+              <li class="is-on"><span>1</span>Posicione</li>
+              <li><span>2</span>Teste à noite</li>
+              <li><span>3</span>Resultado</li>
+            </ol>
+          </div>
+
+          <div class="sim__body">
+            <div class="sim__tools">
+              <div class="sim__toolset" role="toolbar" aria-label="Equipamentos">
+                <button class="sim__tool is-active" data-sim-tool="cam" data-cursor="câmera">
+                  <i class="ti ti--cam"></i><span>Câmera</span><b data-sim-count="cam">0</b>
+                </button>
+                <button class="sim__tool" data-sim-tool="sensor" data-cursor="sensor">
+                  <i class="ti ti--sensor"></i><span>Sensor de alarme</span><b data-sim-count="sensor">0</b>
+                </button>
+                <button class="sim__tool" data-sim-tool="access" data-cursor="acesso">
+                  <i class="ti ti--access"></i><span>Controle de acesso</span><b data-sim-count="access">0</b>
+                </button>
+                <button class="sim__tool" data-sim-tool="erase" data-cursor="remover">
+                  <i class="ti ti--erase"></i><span>Remover</span>
+                </button>
+              </div>
+              <p class="sim__hint" id="simHint">Clique na planta para instalar. Arraste para mover e use a alça branca para girar.</p>
+              <div class="sim__aux">
+                <button class="link-btn" id="simSuggest">Ver sugestão de projeto</button>
+                <button class="link-btn" id="simClear">Limpar</button>
+                <span class="sim__count">Equipamentos: <b id="simCount">0/10</b></span>
+              </div>
+            </div>
+
+            <div class="sim__stage">
+              <canvas id="simCanvas" aria-label="Planta do imóvel para posicionar equipamentos"></canvas>
+              <div class="sim__legend"><span><i class="lg lg--zone"></i>ponto crítico</span><span><i class="lg lg--ok"></i>protegido</span><span><i class="lg lg--gate"></i>acesso</span></div>
+              <div class="sim__toast" id="simToast" role="status"></div>
+            </div>
+
+            <aside class="sim__panel">
+              <div class="sim__score">
+                <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="bg"/><circle cx="60" cy="60" r="52" class="fg" id="simRing"/></svg>
+                <div><b><span id="simScore">0</span>%</b><small>proteção estimada</small></div>
+              </div>
+              <p class="sim__level" id="simLevel">Patrimônio vulnerável</p>
+              <ul class="sim__check" id="simChecklist"></ul>
+              <button class="btn btn--primary sim__test" id="simTest" data-cursor="testar"><span>Testar à noite</span><i class="btn__arrow">☾</i></button>
+              <ol class="sim__log" id="simLog" aria-live="polite"></ol>
+              <div class="sim__result" id="simResult" hidden>
+                <h4 id="simResultTitle"></h4>
+                <p id="simResultText"></p>
+                <a href="#contato" class="btn btn--primary js-cta" id="simCta" data-msg="Olá! Fiz a simulação no site da Semelc e gostaria de uma avaliação." data-cursor="enviar"><span>Quero este projeto avaliado</span><i class="btn__arrow">→</i></a>
+              </div>
+            </aside>
+          </div>
+        </div>
+        <p class="central__disclaimer">Simulação ilustrativa. O projeto real é definido pela equipe da Semelc após avaliação do local.</p>
+      </div>
+    </section>
+
     <!-- ================= DOBRA 5 | PIONEIRISMO (linha do tempo) ================= -->
     <!-- Substituir os itens da linha do tempo por marcos reais e fotos históricas da Semelc assim que o cliente enviar. -->
     <section class="section history" id="historia">
@@ -343,15 +422,51 @@
           </ul>
         </div>
 
+        <!-- Gravação real com detecção -->
+        <div class="replay" id="replay">
+          <div class="replay__info">
+            <p class="eyebrow"><span class="rec-dot"></span> Imagem real · Canal 3</p>
+            <h3>Detecção de pessoas em uma gravação real</h3>
+            <p>A busca inteligente pula os trechos sem movimento e vai direto aos eventos. Clique na imagem para usar o zoom digital.</p>
+            <ol class="replay__log">
+              <li><b>11:34:20</b><span>Pessoa detectada na área</span><em>89%</em></li>
+              <li><b>11:34:50</b><span>Pessoa manuseando objeto</span><em>75%</em></li>
+              <li><b>12:08:58</b><span>Pessoa retorna ao local</span><em>78%</em></li>
+            </ol>
+          </div>
+          <div class="replay__player">
+            <div class="replay__screen">
+              <canvas id="replayCanvas" aria-label="Gravação de câmera com detecção de pessoas" data-cursor="zoom"></canvas>
+              <span class="replay__tag" id="replayTag"></span>
+            </div>
+            <div class="replay__controls">
+              <button class="replay__btn" id="replayPlay" aria-label="Pausar">❚❚</button>
+              <div class="replay__timeline" id="replayTimeline" data-cursor="buscar">
+                <span class="replay__fill" id="replayFill"></span>
+                <span class="replay__head" id="replayHead"></span>
+              </div>
+              <span class="replay__time" id="replayTime">11:33:50</span>
+            </div>
+            <div class="replay__opts">
+              <div class="replay__speed" role="group" aria-label="Velocidade">
+                <button data-speed="2">60x</button><button data-speed="4" class="is-active">120x</button><button data-speed="8">240x</button>
+              </div>
+              <button class="replay__toggle" id="replaySmart" aria-pressed="true">Busca inteligente</button>
+              <button class="replay__toggle" id="replayZoom" aria-pressed="false">Zoom digital</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Console gamificado -->
         <div class="console" id="console">
           <div class="console__bar">
             <div class="console__title"><span class="rec-dot"></span> CENTRAL SEMELC · <span id="gMode">AO VIVO</span></div>
             <div class="console__meters">
               <div><small>Relógio</small><b id="gClock">00:00</b></div>
-              <div><small>Verificadas</small><b id="gScore">0</b></div>
-              <div><small>Perdidas</small><b id="gMiss">0</b></div>
-              <div><small>Resposta média</small><b id="gAvg">—</b></div>
+              <div><small>Pontos</small><b id="gScore">0</b></div>
+              <div><small>Acertos</small><b id="gHits">0</b></div>
+              <div><small>Erros</small><b id="gMiss">0</b></div>
+              <div><small>Resposta</small><b id="gAvg">—</b></div>
               <div><small>Sequência</small><b id="gCombo">x0</b></div>
             </div>
             <button class="console__ir" id="gIR" aria-pressed="false" data-cursor="IR">IR · visão noturna</button>
@@ -365,20 +480,38 @@
           <div class="console__overlay is-open" id="gStart">
             <div class="console__card">
               <p class="eyebrow">Modo operador</p>
-              <h3>Assuma a central por 30 segundos</h3>
-              <p>Um dia inteiro passa em meio minuto. Quando uma câmera detectar movimento, <b>clique no alerta</b> para verificar a ocorrência antes que ela expire.</p>
-              <div class="console__keys"><span><b>Clique</b> verifica</span><span><b>Teclas 1–6</b> também</span><span><b>Sequências</b> valem bônus</span></div>
+              <h3>Assuma a central por 45 segundos</h3>
+              <p>Um dia inteiro passa em menos de um minuto. Quando uma câmera detectar movimento, <b>clique no alerta</b>, veja a imagem e escolha o procedimento: <b>invasão</b>, <b>pessoa autorizada</b> (colete refletivo) ou <b>falso alarme</b> (animal).</p>
+              <div class="console__keys"><span><b>1–6</b> abre a câmera</span><span><b>A</b> acionar</span><span><b>P</b> autorizado</span><span><b>F</b> falso alarme</span></div>
               <button class="btn btn--primary btn--lg" id="gPlay" data-cursor="iniciar"><span>Iniciar plantão</span><i class="btn__arrow">▶</i></button>
               <button class="link-btn" id="gWatch">Só assistir às câmeras</button>
             </div>
           </div>
+          <div class="verify" id="gVerify" aria-hidden="true" role="dialog" aria-label="Verificação de ocorrência">
+            <div class="verify__box">
+              <div class="verify__head">
+                <span><span class="rec-dot"></span> <b id="vCam">CAM 01</b></span>
+                <span>Alerta há <b id="vTimer">0,0s</b></span>
+                <button class="verify__close" id="vClose" aria-label="Fechar verificação">✕</button>
+              </div>
+              <canvas id="vCanvas"></canvas>
+              <p class="verify__q">O que a câmera está mostrando?</p>
+              <div class="verify__actions">
+                <button data-act="acionar" class="va va--red"><kbd>A</kbd><span>Acionar procedimento<small>pessoa não autorizada</small></span></button>
+                <button data-act="autorizado" class="va"><kbd>P</kbd><span>Pessoa autorizada<small>colete refletivo / equipe</small></span></button>
+                <button data-act="animal" class="va"><kbd>F</kbd><span>Falso alarme<small>animal na área</small></span></button>
+              </div>
+            </div>
+          </div>
+
           <div class="console__overlay" id="gEnd">
             <div class="console__card">
               <p class="eyebrow">Fim do plantão · 24h concluídas</p>
               <h3 id="gRank">Operador</h3>
               <div class="console__result">
-                <div><b id="rScore">0</b><small>ocorrências verificadas</small></div>
-                <div><b id="rAvg">0s</b><small>tempo médio de resposta</small></div>
+                <div><b id="rScore">0</b><small>pontos</small></div>
+                <div><b id="rAcc">0%</b><small>decisões corretas</small></div>
+                <div><b id="rAvg">0s</b><small>tempo de resposta</small></div>
                 <div><b id="rBest">x0</b><small>melhor sequência</small></div>
               </div>
               <p class="console__msg">Na Central Semelc, isso é rotina: <b>24 horas por dia</b>, com procedimentos definidos para cada solução contratada.</p>
@@ -411,17 +544,7 @@
           </div>
         </div>
       </div>
-      <!-- Espaços para os prints reais de clientes: troque cada .print__ph por <img src="assets/prints/print-01.webp" alt="Mensagem de cliente"> -->
-      <div class="prints" aria-label="Mensagens de clientes">
-        <div class="prints__track">
-          <figure class="print"><div class="print__ph"><span>Print de cliente 01</span></div></figure>
-          <figure class="print"><div class="print__ph"><span>Print de cliente 02</span></div></figure>
-          <figure class="print"><div class="print__ph"><span>Print de cliente 03</span></div></figure>
-          <figure class="print"><div class="print__ph"><span>Print de cliente 04</span></div></figure>
-          <figure class="print"><div class="print__ph"><span>Print de cliente 05</span></div></figure>
-          <figure class="print"><div class="print__ph"><span>Print de cliente 06</span></div></figure>
-        </div>
-      </div>
+      <!-- Prints reais de clientes podem entrar aqui (ver README). -->
     </section>
 
     <!-- ================= DOBRA 8 | FAQ ================= -->
@@ -472,7 +595,7 @@
   <footer class="footer is-dark">
     <div class="container footer__inner">
       <a href="#inicio" class="brand">
-        <img class="brand__img" src="assets/logo.png" alt="Semelc" onerror="this.remove()">
+        <img class="brand__img" src="assets/logo.webp" alt="Semelc" onerror="this.remove()">
         <span class="brand__text"><b>SEMELC</b><small>Gestão de riscos</small></span>
       </a>
       <p>Segurança eletrônica para residências, empresas e propriedades rurais em Araxá e região. Desde 1990.</p>
@@ -491,6 +614,8 @@
   <script src="vendor/lenis.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/central.js"></script>
+  <script src="js/simulador.js"></script>
+  <script src="js/replay.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

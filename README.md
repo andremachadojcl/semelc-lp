@@ -3,7 +3,7 @@
 Site estático (HTML + CSS + JavaScript). Não precisa de build, nem de servidor especial, nem de nenhum serviço pago.
 
 ## Antes de publicar
-1. **Logo:** salve a logo oficial como `assets/logo.png` (de preferência PNG transparente). Ela substitui automaticamente o selo de texto "SEMELC".
+1. **Logo:** já aplicada (`assets/logo.webp`, `assets/logo-lg.webp`, `assets/favicon.png`).
 2. **WhatsApp:** em `js/config.js`, preencha `whatsapp: "5534XXXXXXXXX"`. Todos os botões passam a abrir o WhatsApp com uma mensagem pronta para cada público (casa, empresa, rural).
 3. **Prints de clientes:** salve em `assets/prints/` e troque cada `<div class="print__ph">` em `index.html` por `<img src="assets/prints/print-01.webp" alt="Mensagem de cliente">`.
 4. **Linha do tempo:** substitua os itens pelos marcos reais e pelas fotos históricas da Semelc (há um comentário no HTML indicando onde).
