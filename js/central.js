@@ -503,11 +503,6 @@
       if (acc >= 0.9 && s.hits >= 8) rank = "★★★";
       else if (acc >= 0.75 && s.hits >= 5) rank = "★★☆";
       else if (acc >= 0.5) rank = "★☆☆";
-      $("#gRank").textContent = rank;
-      $("#rScore").textContent = s.pts;
-      $("#rAcc").textContent = decided ? `${Math.round(acc * 100)}%` : "—";
-      $("#rAvg").textContent = avg ? `${fmt(avg)}s` : "—";
-      $("#rBest").textContent = `x${s.best}`;
       this.ui.end.classList.add("is-open");
       this.nextIdle = performance.now() + 2500;
     },
