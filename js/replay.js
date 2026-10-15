@@ -71,6 +71,7 @@
       if (!inWin && next && nt < next.t - WINDOW) {
         nt = next.t - WINDOW;
         P.jumpFx = 1;
+        flashTag("⏭");
       }
     }
     if (nt >= T1) { nt = T0; P.jumpFx = 1; }
@@ -169,6 +170,10 @@
     ctx.fillStyle = "#fff";
     ctx.textBaseline = "middle";
     ctx.fillText(`▶ ${hms(P.t)}`, 12 * dpr, h - fs * 1.2);
+    if (inWin) {
+      ctx.fillStyle = "#ff2a1a";
+      ctx.beginPath(); ctx.arc(w - 18 * dpr, h - fs * 1.2, 5 * dpr, 0, Math.PI * 2); ctx.fill();
+    }
     ctx.textBaseline = "alphabetic";
   }
 
@@ -228,11 +233,16 @@
         document.querySelectorAll("[data-speed]").forEach((x) => x.classList.toggle("is-active", x === b));
       })
     );
-
+    const smart = $("#replaySmart");
+    smart.addEventListener("click", () => {
+      P.smart = !P.smart;
+      smart.setAttribute("aria-pressed", String(P.smart));
+    });
     const zoomBtn = $("#replayZoom");
     const toggleZoom = () => {
       P.zoom = !P.zoom;
       zoomBtn.setAttribute("aria-pressed", String(P.zoom));
+      flashTag(P.zoom ? "⊕ 2.6x" : "1x");
     };
     zoomBtn.addEventListener("click", toggleZoom);
     cv.addEventListener("click", toggleZoom);

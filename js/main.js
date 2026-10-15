@@ -58,7 +58,21 @@
     const el = document.querySelector(id);
     if (!el) return;
     e.preventDefault();
+    closeMenu();
     scrollToTarget(el);
+  });
+
+  /* ---------- Menu mobile ---------- */
+  const burger = $(".burger");
+  const menu = $("#mobileMenu");
+  function closeMenu() {
+    menu.classList.remove("is-open");
+    burger.setAttribute("aria-expanded", "false");
+  }
+  burger.addEventListener("click", () => {
+    const open = !menu.classList.contains("is-open");
+    menu.classList.toggle("is-open", open);
+    burger.setAttribute("aria-expanded", String(open));
   });
 
   /* ---------- Header some ao rolar para baixo ---------- */
@@ -68,7 +82,7 @@
     start: 0, end: "max",
     onUpdate: (self) => {
       const y = self.scroll();
-      header.classList.toggle("is-hidden", y > 300 && y > lastY);
+      header.classList.toggle("is-hidden", y > 300 && y > lastY && !menu.classList.contains("is-open"));
       lastY = y;
     },
   });
@@ -82,7 +96,7 @@
   };
   tick();
   setInterval(tick, 1000);
-
+  $("#year").textContent = new Date().getFullYear();
 
   /* ---------- Cursor mira ---------- */
   if (finePointer && !reduced) {
@@ -90,13 +104,14 @@
     const cur = $(".cursor");
     const dot = $(".cursor__dot");
     const ring = $(".cursor__ring");
+    const label = $(".cursor__label");
     const dx = gsap.quickTo(dot, "x", { duration: 0.08 }), dy = gsap.quickTo(dot, "y", { duration: 0.08 });
     const rx = gsap.quickTo(ring, "x", { duration: 0.35, ease: "power3" }), ry = gsap.quickTo(ring, "y", { duration: 0.35, ease: "power3" });
     window.addEventListener("pointermove", (e) => { cur.classList.add("is-on"); dx(e.clientX); dy(e.clientY); rx(e.clientX); ry(e.clientY); });
     document.documentElement.addEventListener("pointerleave", () => cur.classList.remove("is-on"));
     document.addEventListener("pointerover", (e) => {
       const t = e.target.closest("[data-cursor]");
-      if (t) cur.classList.add("is-hover");
+      if (t) { label.textContent = t.dataset.cursor; cur.classList.add("is-hover"); }
     });
     document.addEventListener("pointerout", (e) => {
       const t = e.target.closest("[data-cursor]");
@@ -263,6 +278,20 @@
         { clipPath: "inset(0px 0px 0px 0px round 0px)", ease: "none" }, 0)
       .fromTo(vfImg, { scale: 1.2, yPercent: -4 }, { scale: 1, yPercent: 4, ease: "none" }, 0);
 
+    // Marquee com velocidade reagindo ao scroll
+    const track = $(".marquee__track");
+    const loop = gsap.to(track, { xPercent: -50, duration: 28, ease: "none", repeat: -1 });
+    let dir = 1;
+    ScrollTrigger.create({
+      start: 0, end: "max",
+      onUpdate: (self) => {
+        dir = self.direction;
+        const v = Math.min(Math.abs(self.getVelocity()) / 400, 6);
+        gsap.to(loop, { timeScale: dir * (1 + v), duration: 0.3, overwrite: true });
+        gsap.to(loop, { timeScale: dir, duration: 1, delay: 0.3 });
+      },
+    });
+
     // Cards de necessidade: entrada + tilt 3D + brilho
     gsap.from(".need-card", {
       y: 120, rotateX: -18, autoAlpha: 0, duration: 1.3, ease: "expo.out", stagger: 0.12,
@@ -329,17 +358,28 @@
       });
     });
 
-    // Desde 1990: ano rolando até 2026 + régua preenchendo (fixa no desktop)
+    // Linha do tempo: ano rolando + linha preenchendo
     const yearEl = $("#yearCounter");
     const yr = { v: 1990 };
-    const hmm = gsap.matchMedia();
-    hmm.add({ desk: "(min-width: 901px)", mob: "(max-width: 900px)" }, (ctx) => {
-      const st = ctx.conditions.desk
-        ? { trigger: "#historyGrid", start: "center center", end: "+=900", pin: true, scrub: 0.6 }
-        : { trigger: ".history__visual", start: "top 85%", end: "bottom 35%", scrub: 0.6 };
-      const tl = gsap.timeline({ scrollTrigger: st });
-      tl.fromTo(yr, { v: 1990 }, { v: 2026, ease: "none", onUpdate: () => (yearEl.textContent = Math.round(yr.v)) }, 0)
-        .fromTo("#timelineFill", { scaleX: 0 }, { scaleX: 1, ease: "none" }, 0);
+    gsap.to(yr, {
+      v: 2026, ease: "none",
+      onUpdate: () => (yearEl.textContent = Math.round(yr.v)),
+      scrollTrigger: { trigger: "#timeline", start: "top 60%", end: "bottom 60%", scrub: 0.6 },
+    });
+    gsap.to("#timelineFill", {
+      scaleY: 1, ease: "none",
+      scrollTrigger: { trigger: "#timeline", start: "top 60%", end: "bottom 60%", scrub: true },
+    });
+    $$(".tl-item").forEach((it) => {
+      ScrollTrigger.create({
+        trigger: it, start: "top 62%",
+        onToggle: (s) => it.classList.toggle("is-active", s.isActive || s.progress > 0),
+        end: "max",
+      });
+      gsap.from($(".tl-item__card", it), {
+        x: 60, autoAlpha: 0, duration: 1, ease: "expo.out",
+        scrollTrigger: { trigger: it, start: "top 80%", once: true },
+      });
     });
 
     // Console: entrada
@@ -386,6 +426,17 @@
     });
   });
 
+  /* ---------- CTA final: escolha do patrimônio ---------- */
+  const finalCta = $("#finalCta");
+  $$(".pick").forEach((p) => {
+    p.addEventListener("click", () => {
+      $$(".pick").forEach((x) => x.classList.toggle("is-active", x === p));
+      finalCta.dataset.msg = p.dataset.pick;
+      wireCta(finalCta);
+      gsap.fromTo(finalCta, { scale: 0.94 }, { scale: 1, duration: 0.6, ease: "elastic.out(1,.4)" });
+    });
+  });
+
   /* ==========================================================
      PRELOADER — boot do sistema + abertura do obturador
      ========================================================== */
@@ -397,7 +448,8 @@
       .fromTo(".hero__title .hl", { "--hl": 0 }, { "--hl": 1, duration: 0.9, ease: "power4.inOut" }, "-=0.9")
       .from(".hero-anim", { y: 30, autoAlpha: 0, duration: 1, stagger: 0.1 }, "-=1")
       .from(".viewfinder", { y: 120, autoAlpha: 0, duration: 1.4 }, "-=1")
-      .from(".hud__c", { scale: 0, duration: 0.6, stagger: 0.05, ease: "back.out(3)" }, "-=0.8");
+      .from(".hud__c", { scale: 0, duration: 0.6, stagger: 0.05, ease: "back.out(3)" }, "-=0.8")
+      .from(".hero__stats > div", { y: 30, autoAlpha: 0, duration: 0.9, stagger: 0.08 }, "-=1");
     return tl;
   }
 
@@ -429,8 +481,10 @@
     ticks.appendChild(l);
   }
 
+  const logItems = $$("#loaderLog li");
   const count = $("#loaderCount");
   const prog = { v: 0 };
+  const statuses = ["OK", "OK", "OK", "ONLINE"];
   const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
 
   const boot = gsap.timeline({ paused: true });
@@ -441,9 +495,15 @@
       const v = Math.round(prog.v);
       count.textContent = String(v).padStart(2, "0");
       gsap.set("#loaderRing", { strokeDashoffset: 565.5 * (1 - v / 100) });
+      logItems.forEach((li, i) => {
+        const thr = (i + 1) * 22;
+        if (v >= thr - 18 && !li.dataset.shown) { li.dataset.shown = 1; gsap.to(li, { opacity: 1, duration: 0.3 }); }
+        if (v >= thr && !li.dataset.status) li.dataset.status = statuses[i];
+      });
     },
   }, 0.2)
     .to(".loader__center", { scale: 0.9, autoAlpha: 0, duration: 0.5, ease: "power3.in" }, "+=0.15")
+    .to(".loader__corner", { autoAlpha: 0, duration: 0.3 }, "<")
     // obturador abrindo (duas lâminas)
     .to(loader, { clipPath: "inset(50% 0% 50% 0%)", duration: 1.1, ease: "expo.inOut" })
     .add(() => { start(); heroIntro(); }, "-=0.55")
